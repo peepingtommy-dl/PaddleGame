@@ -26,6 +26,13 @@ let verticalSpacing = 10; // 垂直間隔
 let startingY = 50; // ブロックの初めのY座標
 let capsules = [];
 let hasSpecialAbility = false;
+const capsuleBlockIndex = 5; // 例: 6番目のブロックがカプセルを落とす
+const capsuleColor = '#00FF00'; // カプセルの色
+let bullets = [];
+const bulletSpeed = 5;
+const bulletRadius = 4;
+
+
 
 
 for (let row = 0; row < rows; row++) {
@@ -46,6 +53,12 @@ for (let row = 0; row < rows; row++) {
 
 document.addEventListener('keydown', keyDownHandler);
 document.addEventListener('keyup', keyUpHandler);
+document.addEventListener('keydown', (event) => {
+  if (event.code === 'Space') {
+    fireBullet();
+  }
+});
+
 
 function keyDownHandler(e) {
   if (e.key === 'Enter' && !isBallFlying) {
@@ -84,16 +97,18 @@ function drawBall() {
 }
 
 function drawBlock() {
-  blocks.forEach(block => {
+  blocks.forEach((block, index) => {
     if (block.visible) {
       context.beginPath();
       context.rect(block.x, block.y, block.width, block.height);
-      context.fillStyle = "#0095DD";
+      // カプセルを落とすブロックの色をカプセルの色と同じにする
+      context.fillStyle = index === capsuleBlockIndex ? capsuleColor : "#0095DD";
       context.fill();
       context.closePath();
     }
   });
 }
+
 
 function drawCapsules() {
   capsules.forEach(capsule => {
@@ -105,6 +120,27 @@ function drawCapsules() {
   });
 }
 
+function drawBullets() {
+  bullets.forEach(bullet => {
+    context.beginPath();
+    context.arc(bullet.x, bullet.y, bulletRadius, 0, Math.PI * 2);
+    context.fillStyle = '#FF0000'; // 弾の色
+    context.fill();
+    context.closePath();
+  });
+}
+
+function updateBullets() {
+  bullets.forEach((bullet, index) => {
+    bullet.y -= bulletSpeed; // 弾を上に移動
+
+    // 弾が画面外に出たら削除
+    if (bullet.y < 0) {
+      bullets.splice(index, 1);
+    }
+  });
+}
+
 
 function collisionDetection() {
   blocks.forEach((block, index) => {
@@ -112,8 +148,8 @@ function collisionDetection() {
       ballYSpeed = -ballYSpeed; // ボールの方向を反転
       block.visible = false; // ブロックを消す
 
-      // 特定のブロックが壊れたときにカプセルを生成（例：最初のブロック）
-      if (index === 0) {
+      // カプセルを落とすブロックが壊れたときにカプセルを生成
+      if (index === capsuleBlockIndex) {
         capsules.push({
           x: block.x + block.width / 2,
           y: block.y,
@@ -123,7 +159,16 @@ function collisionDetection() {
       }
     }
   });
+  bullets.forEach((bullet, bulletIndex) => {
+    blocks.forEach((block, blockIndex) => {
+      if (block.visible && bullet.x > block.x && bullet.x < block.x + block.width && bullet.y > block.y && bullet.y < block.y + block.height) {
+        block.visible = false; // ブロックを消す
+        bullets.splice(bulletIndex, 1); // 弾を削除
+      }
+    });
+  });
 }
+
 
 function updateCapsules() {
   capsules.forEach(capsule => {
@@ -140,6 +185,16 @@ function checkCapsuleCollision() {
   });
 }
 
+function fireBullet() {
+  if (hasSpecialAbility) {
+    bullets.push({
+      x: paddleX + paddleWidth / 2,
+      y: paddleY
+    });
+  }
+}
+
+
 
 function draw() {
   context.clearRect(0, 0, canvas.width, canvas.height);
@@ -150,6 +205,8 @@ function draw() {
   drawCapsules(); // カプセルを描画
   updateCapsules(); // カプセルを更新
   checkCapsuleCollision(); // カプセルとパドルの衝突検出
+  drawBullets(); // 弾を描画
+  updateBullets(); // 弾を更新
 
 
   if (ballX + ballXSpeed < ballRadius || ballX + ballXSpeed > canvas.width - ballRadius) {
