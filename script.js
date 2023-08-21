@@ -24,6 +24,9 @@ let blockHeight = 20; // ブロックの高さ
 let horizontalSpacing = 10; // 水平間隔
 let verticalSpacing = 10; // 垂直間隔
 let startingY = 50; // ブロックの初めのY座標
+let capsules = [];
+let hasSpecialAbility = false;
+
 
 for (let row = 0; row < rows; row++) {
   for (let i = 0; i < numberOfBlocksPerRow; i++) {
@@ -92,12 +95,47 @@ function drawBlock() {
   });
 }
 
+function drawCapsules() {
+  capsules.forEach(capsule => {
+    context.beginPath();
+    context.arc(capsule.x, capsule.y, capsule.radius, 0, Math.PI * 2);
+    context.fillStyle = '#00FF00'; // カプセルの色
+    context.fill();
+    context.closePath();
+  });
+}
+
 
 function collisionDetection() {
-  blocks.forEach(block => {
+  blocks.forEach((block, index) => {
     if (block.visible && ballX > block.x && ballX < block.x + block.width && ballY > block.y && ballY < block.y + block.height) {
       ballYSpeed = -ballYSpeed; // ボールの方向を反転
       block.visible = false; // ブロックを消す
+
+      // 特定のブロックが壊れたときにカプセルを生成（例：最初のブロック）
+      if (index === 0) {
+        capsules.push({
+          x: block.x + block.width / 2,
+          y: block.y,
+          radius: 5,
+          speed: 2
+        });
+      }
+    }
+  });
+}
+
+function updateCapsules() {
+  capsules.forEach(capsule => {
+    capsule.y += capsule.speed; // カプセルを下に移動
+  });
+}
+
+function checkCapsuleCollision() {
+  capsules.forEach((capsule, index) => {
+    if (capsule.y + capsule.radius > paddleY && capsule.x > paddleX && capsule.x < paddleX + paddleWidth) {
+      hasSpecialAbility = true; // 特殊能力を有効にする
+      capsules.splice(index, 1); // カプセルを削除
     }
   });
 }
@@ -109,6 +147,10 @@ function draw() {
   drawPaddle();
   drawBall();
   collisionDetection();
+  drawCapsules(); // カプセルを描画
+  updateCapsules(); // カプセルを更新
+  checkCapsuleCollision(); // カプセルとパドルの衝突検出
+
 
   if (ballX + ballXSpeed < ballRadius || ballX + ballXSpeed > canvas.width - ballRadius) {
     ballXSpeed = -ballXSpeed;
