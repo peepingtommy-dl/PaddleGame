@@ -45,7 +45,7 @@ for (let row = 0; row < rows; row++) {
       width: blockWidth,
       height: blockHeight,
       visible: true,
-      durability: i === 5 ? 20 : 1 // 例: 6番目のブロックの耐久力を20に設定
+      durability: row === 0 && i === 5 ? 20 : 1 // 例: 6番目のブロックの耐久力を20に設定
     };
     blocks.push(block);
   }
