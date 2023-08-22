@@ -104,12 +104,11 @@ function drawBlock() {
     if (block.visible) {
       context.beginPath();
       context.rect(block.x, block.y, block.width, block.height);
-      // カプセルを落とすブロックの色をカプセルの色と同じにする
       // 特定のブロック（例：6番目のブロック）の色をメタリックにする
-      if (index === capsuleBlockIndex) {
-        context.fillStyle = capsuleColor;
-      } else if (index === 5) { // 6番目のブロックをメタリックな色に設定
+      if (index === 5) { // 6番目のブロックをメタリックな色に設定
         context.fillStyle = "#A9A9A9";
+      } else if (index === capsuleBlockIndex) {
+        context.fillStyle = capsuleColor; // カプセルを落とすブロックの色をカプセルの色と同じにする
       } else {
         context.fillStyle = "#0095DD";
       }
@@ -118,6 +117,7 @@ function drawBlock() {
     }
   });
 }
+
 
 
 
