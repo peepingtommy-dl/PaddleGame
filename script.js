@@ -26,7 +26,8 @@ let verticalSpacing = 10; // 垂直間隔
 let startingY = 50; // ブロックの初めのY座標
 let capsules = [];
 let hasSpecialAbility = false;
-const capsuleBlockIndex = 5; // 例: 6番目のブロックがカプセルを落とす
+const capsuleBlockIndex = 2; // 例: 6番目のブロックがカプセルを落とす
+const hardBlockIndex = 5; // 例: 6番目のブロックが硬いメタリックなブロック
 const capsuleColor = '#00FF00'; // カプセルの色
 let bullets = [];
 const bulletSpeed = 5;
@@ -104,12 +105,16 @@ function drawBlock() {
     if (block.visible) {
       context.beginPath();
       context.rect(block.x, block.y, block.width, block.height);
-      // 特定のブロック（例：6番目のブロック）の色をメタリックにする
-      if (index === 5) { // 6番目のブロックをメタリックな色に設定
+      // 6番目のブロックをメタリックな色に設定
+      if (index === 5) {
         context.fillStyle = "#A9A9A9";
-      } else if (index === capsuleBlockIndex) {
-        context.fillStyle = capsuleColor; // カプセルを落とすブロックの色をカプセルの色と同じにする
-      } else {
+      } 
+      // カプセルを落とすブロックの色をカプセルの色と同じにする
+      else if (index === capsuleBlockIndex) {
+        context.fillStyle = capsuleColor;
+      } 
+      // 他のブロックの色
+      else {
         context.fillStyle = "#0095DD";
       }
       context.fill();
@@ -117,6 +122,7 @@ function drawBlock() {
     }
   });
 }
+
 
 
 
