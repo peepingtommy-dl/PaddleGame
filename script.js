@@ -35,6 +35,7 @@ const bulletRadius = 4;
 
 
 
+// ブロックの生成部分
 for (let row = 0; row < rows; row++) {
   for (let i = 0; i < numberOfBlocksPerRow; i++) {
     let block = {
@@ -42,11 +43,13 @@ for (let row = 0; row < rows; row++) {
       y: startingY + row * (blockHeight + verticalSpacing),
       width: blockWidth,
       height: blockHeight,
-      visible: true
+      visible: true,
+      durability: i === 5 ? 20 : 1 // 例: 6番目のブロックの耐久力を20に設定
     };
     blocks.push(block);
   }
 }
+
 
 
 
@@ -102,12 +105,20 @@ function drawBlock() {
       context.beginPath();
       context.rect(block.x, block.y, block.width, block.height);
       // カプセルを落とすブロックの色をカプセルの色と同じにする
-      context.fillStyle = index === capsuleBlockIndex ? capsuleColor : "#0095DD";
+      // 特定のブロック（例：6番目のブロック）の色をメタリックにする
+      if (index === capsuleBlockIndex) {
+        context.fillStyle = capsuleColor;
+      } else if (index === 5) { // 6番目のブロックをメタリックな色に設定
+        context.fillStyle = "#A9A9A9";
+      } else {
+        context.fillStyle = "#0095DD";
+      }
       context.fill();
       context.closePath();
     }
   });
 }
+
 
 
 function drawCapsules() {
@@ -145,11 +156,14 @@ function updateBullets() {
 function collisionDetection() {
   blocks.forEach((block, index) => {
     if (block.visible && ballX > block.x && ballX < block.x + block.width && ballY > block.y && ballY < block.y + block.height) {
-      ballYSpeed = -ballYSpeed; // ボールの方向を反転
-      block.visible = false; // ブロックを消す
+      ballYSpeed = -ballYSpeed;
+      block.durability -= 1; // 耐久力を減らす
+      if (block.durability <= 0) {
+        block.visible = false; // 耐久力が0になったらブロックを消す
+      }
 
       // カプセルを落とすブロックが壊れたときにカプセルを生成
-      if (index === capsuleBlockIndex) {
+      if (index === capsuleBlockIndex && block.durability <= 0) {
         capsules.push({
           x: block.x + block.width / 2,
           y: block.y,
@@ -162,12 +176,16 @@ function collisionDetection() {
   bullets.forEach((bullet, bulletIndex) => {
     blocks.forEach((block, blockIndex) => {
       if (block.visible && bullet.x > block.x && bullet.x < block.x + block.width && bullet.y > block.y && bullet.y < block.y + block.height) {
-        block.visible = false; // ブロックを消す
+        block.durability -= 1; // 耐久力を減らす
+        if (block.durability <= 0) {
+          block.visible = false; // 耐久力が0になったらブロックを消す
+        }
         bullets.splice(bulletIndex, 1); // 弾を削除
       }
     });
   });
 }
+
 
 
 function updateCapsules() {
