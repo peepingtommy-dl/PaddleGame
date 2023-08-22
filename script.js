@@ -32,6 +32,10 @@ const capsuleColor = '#00FF00'; // カプセルの色
 let bullets = [];
 const bulletSpeed = 5;
 const bulletRadius = 4;
+let targetRow = 1; // 真ん中の行（0から始まるインデックス）
+let targetColumn = 5; // 左から6番目の列（0から始まるインデックス）
+let metallicBlockIndex = targetRow * numberOfBlocksPerRow + targetColumn;
+
 
 
 
@@ -45,7 +49,7 @@ for (let row = 0; row < rows; row++) {
       width: blockWidth,
       height: blockHeight,
       visible: true,
-      durability: row === 0 && i === 5 ? 20 : 1 // 例: 6番目のブロックの耐久力を20に設定
+      durability: row === 1 && i === 5 ? 20 : 1 // 例: 6番目のブロックの耐久力を20に設定
     };
     blocks.push(block);
   }
@@ -106,7 +110,7 @@ function drawBlock() {
       context.beginPath();
       context.rect(block.x, block.y, block.width, block.height);
       // 6番目のブロックをメタリックな色に設定
-      if (index === 5) {
+      if (index === metallicBlockIndex) {
         context.fillStyle = "#A9A9A9";
       } 
       // カプセルを落とすブロックの色をカプセルの色と同じにする
