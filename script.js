@@ -286,14 +286,14 @@ function draw() {
   ballY += ballYSpeed;
 
   // ゲームオーバーのチェック
-  if (ballY > canvas.height + ballRadius + 12) {
+  if (isBallVisible && ballY > canvas.height + ballRadius + 12) {
     alert("GAME OVER");
     document.location.reload(); // ゲームをリセット
     return; // これ以上の更新を停止
   }
 
-  context.fillStyle = "black";
-  context.fillText("X: " + ballX + " Y: " + ballY, 10, 10);
+  // context.fillStyle = "black";
+  // context.fillText("X: " + ballX + " Y: " + ballY, 10, 10);
 
   requestAnimationFrame(draw);
 }
