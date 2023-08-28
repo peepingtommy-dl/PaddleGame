@@ -15,6 +15,8 @@ const ballRadius = 10;
 let ballYSpeed = 0; // ボールのY方向の速度
 let ballXSpeed = 0; // ボールのX方向の速度
 let isBallFlying = false; // ボールが飛び始めたか
+let isBallVisible = true;
+
 
 let blocks = [];
 let rows = 3; // 行の数
@@ -97,12 +99,15 @@ function drawPaddle() {
 }
 
 function drawBall() {
-  context.beginPath();
-  context.arc(ballX, ballY, ballRadius, 0, Math.PI * 2);
-  context.fillStyle = '#0095DD';
-  context.fill();
-  context.closePath();
+  if (isBallVisible) {
+    context.beginPath();
+    context.arc(ballX, ballY, ballRadius, 0, Math.PI * 2);
+    context.fillStyle = '#0095DD';
+    context.fill();
+    context.closePath();
+  }
 }
+
 
 function drawBlock() {
   blocks.forEach((block, index) => {
@@ -197,11 +202,12 @@ function collisionDetection() {
 
   bullets.forEach((bullet, bulletIndex) => {
     if (ballX > bullet.x - ballRadius && ballX < bullet.x + ballRadius && ballY > bullet.y - ballRadius && ballY < bullet.y + ballRadius) {
-      isBallFlying = false; // ボールの動きを停止
-      ballY = canvas.height + ballRadius + 10; // ボールをゲーム画面外に移動
+      isBallVisible = false; // ボールを非表示に設定
       bullets.splice(bulletIndex, 1); // 弾を削除
     }
   });
+  
+  
   
   
 }
