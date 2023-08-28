@@ -194,6 +194,14 @@ function collisionDetection() {
       }
     });
   });
+
+  bullets.forEach((bullet, bulletIndex) => {
+    if (ballX > bullet.x - ballRadius && ballX < bullet.x + ballRadius && ballY > bullet.y - ballRadius && ballY < bullet.y + ballRadius) {
+      isBallFlying = false; // ボールの動きを停止
+      bullets.splice(bulletIndex, 1); // 弾を削除
+    }
+  });
+  
 }
 
 
